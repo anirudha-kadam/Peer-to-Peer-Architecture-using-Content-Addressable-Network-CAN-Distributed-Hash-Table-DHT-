@@ -1,0 +1,173 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1348\cocoasubrtf170
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fnil\fcharset0 Monaco;}
+{\colortbl;\red255\green255\blue255;\red0\green200\blue125;}
+\margl1440\margr1440\vieww25400\viewh13560\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\f0\fs24 \cf0 Name: Anirudha Kadam\
+Email: akadam3@binghamton.edu\
+\
+Language Used: Java\
+\
+Design:\
+\
+1) Protocol: I have used UDP protocol for the implementation of CAN. Communication takes place using DatagramSockets. One thread takes input from user and another thread\
+		keeps listening continuously for requests from neighbors.\
+\
+2) Join: In Join operation, node first checks if the randX and randY lies in its zone, if not then checks in takeovers zone. If its present in my zone, then split depending on the size of node\'92s zone.\
+	If not in my zone then I find the neighbor whose zone\'92s midpoint is closer to randX, randY and forward it to closest node. But request doesn\'92t go backwards.\
+	While splitting, if its square or rectangle with width greater then height, I split vertically and If its rectangle with height greater than width, I split horizontally. I have used hash map to store\
+	neighbors to avoid duplicates. New node gets part of a zone with randX & randY. A new node can join through bootstrap or through any active node. Bootstrap has partial list of active nodes \
+	as not all nodes connect through bootstrap. \
+\
+3) insert: Same logic for locating the co-ordinates of file as used in join. If the file co-ordinates lie in node\'92s zone then put the (fileName , bytes) as key, value pair into node\'92s hashtable.\
+  	note: As I have used UDP, theres a limitation on packet size. So I have assumed that the file size would be less that 64Kb as it is mentioned in the project description that as long as all the operations are\
+	 working fine, you may assume few things. So file size should not be greater than 64 kb.\
+\
+4) search: Same routing algorithm as used in above two cases. If file is found in hashtable of node who has the file coordinates lying inside it, then success or else failure.\
+\
+5) view or view peer : I have used depth first search approach to obtain information of any peer in CAN just by its name or to view all nodes info.\
+\
+6) leave: if forms perfect square with one of the neighbors then merge or taken over by smallest neighbor. Affected neighbors are notified and shown updates neighbor info.\
+\
+\
+How to run:\
+\
+step 1:  Extract akadam3-project1.tar.gz and go to directory akadam3-project1\
+step 2:  make\
+step 3:  java BootstrapDriver <bootstrapPort>\
+step 4:  java PeerDriver <bootstrapIp> <bootstrapPort> <peerName> <peerPort>\
+\
+How to use commands:\
+\
+1) Join: As I am setting <bootstrapIp> & <bootstrapPort> through command line arguments, Just type \'93join\'94\
+\
+2) insert: insert <fileName>\
+\
+3) search: search <fileName>\
+\
+4) view: view or view <peerName>\
+\
+5) leave: leave\
+\
+\
+Sample Output:\
+\pard\pardeftab720
+
+\f1\fs22 \cf0 USAGE: \
+(1) join \
+(2) insert <fileName> \
+(3) search <fileName> \
+(4) view <peerName> or view \
+(5) leave\
+Enter Command: \
+\pard\pardeftab720
+\cf2 join\cf0 \
+USAGE: \
+(1) join \
+(2) insert <fileName> \
+(3) search <fileName> \
+(4) view <peerName> or view \
+(5) leave\
+Enter Command: \
+----------------------------------------------------\
+Name: c\
+\
+ipAddress: /192.168.1.12\
+\
+x1: 0.0 y1: 0.0 x2: 5.0 y2: 5.0\
+\
+---NEIGHBORS---\
+a\
+b\
+\
+---FILES---\
+\
+----------------------------------------------------\
+\cf2 leave\cf0 \
+USAGE: \
+(1) join \
+(2) insert <fileName> \
+(3) search <fileName> \
+(4) view <peerName> or view \
+(5) leave\
+Enter Command: \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\f0\fs24 \cf0 \
+\pard\pardeftab720
+
+\f1\fs22 \cf0 ----------------------------------------------------\
+\pard\pardeftab720
+\cf2 insert note.txt\cf0 \
+USAGE: \
+(1) join \
+(2) insert <fileName> \
+(3) search <fileName> \
+(4) view <peerName> or view \
+(5) leave\
+Enter Command: \
+-------------------------OUTPUT----------------------------\
+\
+Peer c stores the file\
+\
+Success->a:/192.168.1.12:8080->b:/192.168.1.12:8081->c:/192.168.1.12:8082->Success\
+\
+-----------------------------------------------------------\
+-------------------------OUTPUT----------------------------\
+\pard\pardeftab720
+\cf2 search note.txt\cf0 \
+\pard\pardeftab720
+\cf0 Peer c stores the file\
+\
+Success->a:/192.168.1.12:8080->b:/192.168.1.12:8081->c:/192.168.1.12:8082->Success\
+\
+-----------------------------------------------------------\
+\
+\pard\pardeftab720
+\cf2 view\cf0 \
+USAGE: \
+(1) join \
+(2) insert <fileName> \
+(3) search <fileName> \
+(4) view <peerName> or view \
+(5) leave\
+Enter Command: \
+----------------------------------------------------\
+Name: a\
+\
+ipAddress: /192.168.1.12\
+\
+x1: 5.0 y1: 5.0 x2: 10.0 y2: 10.0\
+\
+----------------------------------------------------\
+----------------------------------------------------\
+Name: b\
+\
+ipAddress: /192.168.1.12\
+\
+x1: 0.0 y1: 5.0 x2: 5.0 y2: 10.0\
+\
+----------------------------------------------------\
+----------------------------------------------------\
+Name: c\
+\
+ipAddress: /192.168.1.12\
+\
+x1: 0.0 y1: 0.0 x2: 5.0 y2: 5.0\
+\
+----------------------------------------------------\
+----------------------------------------------------\
+Name: d\
+\
+ipAddress: /192.168.1.12\
+\
+x1: 5.0 y1: 0.0 x2: 10.0 y2: 5.0\
+\
+----------------------------------------------------\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\f0\fs24 \cf0  \
+\
+}
